@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">D_Cole_Android_UsersAndData</string>
+    <string name="user_name">User Name</string>
+    <string name="email_address">Email Address</string>
+    <string name="password">Password</string>
+    <string name="create_account">Create An Account</string>
+    <string name="log_in">Log In</string>
+    <string name="account_log_in">Log In Your Account</string>
+    <string name="hello">Hello, </string>
 </resources>
