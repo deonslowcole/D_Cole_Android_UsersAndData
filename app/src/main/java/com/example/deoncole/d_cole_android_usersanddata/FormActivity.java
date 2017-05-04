@@ -1,44 +1,59 @@
+//Deonslow Cole
+//Cross Platform MD-1705
+//FormActivity
+
+
 package com.example.deoncole.d_cole_android_usersanddata;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.example.deoncole.d_cole_android_usersanddata.Objects.ExpenseObjects;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 
 public class FormActivity extends AppCompatActivity {
 
-    EditText exTypeEt, exLocationEt, exAmountEt, exDateEt;
-    String dbRefString;
+    //Declare objects for the views
+    EditText exLocationEt, exAmountEt, exDateEt;
+
+    //Declare an object for the database
     FirebaseDatabase fbDatabase;
-    public static DatabaseReference dbRef;
+
+    //Declare an object to reference teh database
+    DatabaseReference dbRef;
+
+    //Declare an object for authorization to the database
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form);
 
-        exTypeEt = (EditText)findViewById(R.id.exTypeEt);
+        //Initialize the authorization
+        mAuth = FirebaseAuth.getInstance();
+
+        //Set the views to the xml
         exLocationEt = (EditText)findViewById(R.id.exLocationEt);
         exAmountEt = (EditText)findViewById(R.id.exAmountEt);
         exDateEt = (EditText)findViewById(R.id.exDateEt);
 
-        dbRefString = "expenses";
-
+        //Get the date to pre-load to the date edit text field
         SimpleDateFormat sdf = new SimpleDateFormat( "MM/dd/yyyy" );
         exDateEt.setText( sdf.format( new Date() ));
 
+        //Initialize the database and reference objects
         fbDatabase = FirebaseDatabase.getInstance();
-        dbRef = fbDatabase.getReference("user_expenses");
+        dbRef = fbDatabase.getReference("user_expenses").child(mAuth.getCurrentUser().getUid());
     }
 
     @Override
@@ -51,7 +66,7 @@ public class FormActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        String exType = exTypeEt.getText().toString().trim();
+        //Declare objects for the user input
         String exLocation = exLocationEt.getText().toString().trim();
         String amount = exAmountEt.getText().toString().trim();
         Double exAmount = Double.parseDouble(amount);
@@ -63,16 +78,7 @@ public class FormActivity extends AppCompatActivity {
         //If the id is equal to the action icon id go to the next activity using an intent
         if (selectedAction == R.id.action_save){
 
-//            ExpenseObjects exObject = new ExpenseObjects(exLocation, exAmount, exDate);
-
-            DatabaseReference expenseRef = dbRef.child(dbRefString);
-
-//            HashMap<String, ExpenseObjects> expenses = new HashMap<>();
-//            expenses.put(exType, new ExpenseObjects(exLocation, exAmount, exDate));
-            DatabaseReference newExpRef = expenseRef.push();
-            newExpRef.setValue(new ExpenseObjects(exLocation, exAmount, exDate));
-
-//            expenseRef.setValue(expenses);
+            dbRef.setValue(new ExpenseObjects(exLocation, exAmount, exDate));
 
             finish();
         }

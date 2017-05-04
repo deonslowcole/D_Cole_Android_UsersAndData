@@ -10,13 +10,24 @@
     android:paddingBottom="16dp"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    tools:context="com.example.deoncole.d_cole_android_usersanddata.ExpenseListActivity">
+    tools:context="com.example.deoncole.d_cole_android_usersanddata.ExpenseActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center">
+
+        <TextView
+            android:id="@+id/titleTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:text="@string/your_last_expense"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/locationTv"
@@ -45,23 +56,11 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/readDbBt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="Read Database"/>
-
-    <Button
         android:id="@+id/deleteDbBt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:text="Delete From Database"/>
 
-    <!--<ListView-->
-        <!--android:id="@+id/homeworkLv"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content">-->
-    <!--</ListView>-->
 
 </LinearLayout>

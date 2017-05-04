@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
+    //Declare objects for the views
     EditText emailEt, passwordEt;
     TextView logInTv, logOutTv, verifyTv;
     
@@ -35,12 +36,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Initialize the views with the xml
         emailEt = (EditText)findViewById(R.id.emailAddressEt);
         passwordEt = (EditText)findViewById(R.id.passwordEt);
         logInTv = (TextView)findViewById(R.id.logInTv);
         logOutTv = (TextView)findViewById(R.id.logOutTv);
         verifyTv = (TextView)findViewById(R.id.verifiedTv);
 
+        //Set on click listeners for the buttons
         findViewById(R.id.signUpBt).setOnClickListener(this);
         findViewById(R.id.hasAcctBt).setOnClickListener(this);
         findViewById(R.id.logInBt).setOnClickListener(this);
@@ -62,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         };
 
+        //Click listener for when the user wants to log out
         logOutTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    //Method for user to create an account and log in
     private void createAccount(String email, String password){
 
         if (!checkUserInputs()) {
@@ -114,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+    //Method for user that already has an account to sign in
     private void signIn(String email, String password){
 
         if (!checkUserInputs()) {
@@ -127,8 +133,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 if(!task.isSuccessful()){
                     System.out.println("signInWithEmail:failed");
-                    Toast.makeText(MainActivity.this, "Email address not found please sign up",
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Email address or password not valid. " +
+                                    "Please enter a valid email & password or create an account",
+                            Toast.LENGTH_LONG).show();
                 } else {
                     FirebaseUser user = mAuth.getCurrentUser();
                     updateUI(user);
@@ -164,13 +171,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    //Method ot update the UI when the user has signed in
+    //Method to update the UI when the user has signed in
     private void updateUI(FirebaseUser user) {
 
-        String verifyEmail = "Click to verify email";
-
         if(user != null){
-//            user.reload();
             String helloUser = getString(R.string.hello) + " " + user.getEmail();
             String notUser = "Not " + user.getEmail() + "? Click to log out.";
             emailEt.setVisibility(View.GONE);
@@ -200,26 +204,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //Method to send email verification
-    private void verifyEmail(){
-        final FirebaseUser user = mAuth.getCurrentUser();
-
-        user.sendEmailVerification().addOnCompleteListener(this, new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-
-                if(task.isSuccessful()){
-                    Toast.makeText(MainActivity.this, "Verification email sent to " + user
-                            .getEmail(), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "Verification email could not be sent to " +
-                            user.getEmail(), Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
-    }
-
 
     @Override
     public void onClick(View v) {
@@ -244,8 +228,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void goToListScreen(){
-        Intent hwListIntent = new Intent(this, ExpenseListActivity.class);
-        startActivity(hwListIntent);
+        Intent exActivityIntent = new Intent(this, ExpenseActivity.class);
+        startActivity(exActivityIntent);
     }
 
 }

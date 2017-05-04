@@ -1,3 +1,8 @@
+//Deonslow Cole
+//Cross Platform MD-1705
+//ExpenseObjects
+
+
 package com.example.deoncole.d_cole_android_usersanddata.Objects;
 
 

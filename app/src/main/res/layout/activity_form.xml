@@ -32,13 +32,6 @@
             android:textSize="18sp"/>
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/exTypeEt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:hint="@string/enter_type"
-        android:inputType="text"/>
 
     <EditText
         android:id="@+id/exLocationEt"
