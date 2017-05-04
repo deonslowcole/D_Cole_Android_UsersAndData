@@ -3,6 +3,7 @@ package com.example.deoncole.d_cole_android_usersanddata;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.deoncole.d_cole_android_usersanddata.Objects.ExpenseObjects;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,10 +20,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ExpenseListActivity extends AppCompatActivity {
 
-    Button readDbBt, deleteDbBt;
+    Button deleteDbBt;
     TextView locationTv, amountTv, dateTv;
     String location, amount, date;
 
@@ -33,28 +36,24 @@ public class ExpenseListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_expense_list);
 
-        dbRef = database.getReference("user_expenses").child("expenses");
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        String authString = mAuth.getCurrentUser().getUid();
+        dbRef = database.getReference("user_expenses").child(authString);
 
         locationTv = (TextView)findViewById(R.id.locationTv);
         amountTv = (TextView)findViewById(R.id.amountTv);
         dateTv = (TextView)findViewById(R.id.dateTv);
-        readDbBt = (Button)findViewById(R.id.readDbBt);
         deleteDbBt = (Button)findViewById(R.id.deleteDbBt);
 
-        readDbBt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                readDatabase();
-                locationTv.setText(location);
-                amountTv.setText(amount);
-                dateTv.setText(date);
-            }
-        });
+        readDatabase();
 
         deleteDbBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dbRef.setValue(null);
+                location = null;
+                date = null;
+                amount = null;
                 locationTv.setText("");
                 amountTv.setText("");
                 dateTv.setText("");
@@ -89,19 +88,29 @@ public class ExpenseListActivity extends AppCompatActivity {
        dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
                 for (DataSnapshot objSnapShot : dataSnapshot.getChildren()){
-                    ExpenseObjects obj = objSnapShot.getValue(ExpenseObjects.class);
 
-                    location = obj.getExLocation();
-                    amount = "Amount spent was " + String.valueOf(obj.getExAmount());
-                    date = obj.getExDate();
+                    String childString = objSnapShot.getValue().toString();
+                    if (Objects.equals(objSnapShot.getKey(), "exDate")) {
+                        date = childString;
+                    } else if (Objects.equals(objSnapShot.getKey(), "exAmount")) {
+                        amount = childString;
+                    } else if (Objects.equals(objSnapShot.getKey(), "exLocation")) {
+                        location = childString;
+                    }
 
-//                    String amountText = "Amount spent was " + String.valueOf(obj.getExAmount());
-//                    locationTv.setText(obj.getExLocation());
-//                    amountTv.setText(amountText);
-//                    dateTv.setText(obj.getExDate());
-//                    System.out.println(obj.getExAmount());
                 }
+
+                locationTv.setText(location);
+                if(amount != null){
+                    amountTv.setText(amount);
+                }else{
+                    amountTv.setText("No expenses logged");
+                }
+                dateTv.setText(date);
+
+
             }
 
             @Override
