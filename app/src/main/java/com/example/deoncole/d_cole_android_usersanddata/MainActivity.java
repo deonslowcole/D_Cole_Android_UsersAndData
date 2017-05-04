@@ -5,12 +5,12 @@
 
 package com.example.deoncole.d_cole_android_usersanddata;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     EditText emailEt, passwordEt;
     TextView logInTv, logOutTv, verifyTv;
-    Button signUpBt;
     
     //Declare objects for user authorization and listener for changes
     private FirebaseAuth mAuth;
@@ -44,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         findViewById(R.id.signUpBt).setOnClickListener(this);
         findViewById(R.id.hasAcctBt).setOnClickListener(this);
+        findViewById(R.id.logInBt).setOnClickListener(this);
         findViewById(R.id.verifyBt).setOnClickListener(this);
 
         //Initialize the authorization
@@ -61,7 +61,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         };
+
+        logOutTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signOut();
+            }
+        });
     }
+
 
     @Override
     protected void onStart() {
@@ -70,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mAuth.addAuthStateListener(mAuthListener);
         FirebaseUser user = mAuth.getCurrentUser();
         if(user != null){
-            user.reload();
             updateUI(user);
         }
 
@@ -122,9 +129,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     System.out.println("signInWithEmail:failed");
                     Toast.makeText(MainActivity.this, "Email address not found please sign up",
                             Toast.LENGTH_SHORT).show();
+                } else {
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    updateUI(user);
                 }
             }
         });
+    }
+
+    //Method for the user to sign out
+    private void signOut() {
+        mAuth.signOut();
+        updateUI(null);
     }
 
 
@@ -140,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if(passwordEt.getText().length() < 6){
-            passwordEt.setError("Password must not be empty and more than 6 characters");
+            passwordEt.setError("Please enter a password more than 6 characters");
             isEmpty = false;
         }
 
@@ -151,12 +167,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //Method ot update the UI when the user has signed in
     private void updateUI(FirebaseUser user) {
 
-        String helloUser = getString(R.string.hello) + " " + user.getEmail();
-        String notUser = "Not " + user.getEmail() + "? Click to log out & sign up";
         String verifyEmail = "Click to verify email";
 
         if(user != null){
-            user.reload();
+//            user.reload();
+            String helloUser = getString(R.string.hello) + " " + user.getEmail();
+            String notUser = "Not " + user.getEmail() + "? Click to log out.";
             emailEt.setVisibility(View.GONE);
             passwordEt.setVisibility(View.GONE);
             findViewById(R.id.signUpBt).setVisibility(View.GONE);
@@ -166,17 +182,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             logOutTv.setText(notUser);
 
             logInTv.setVisibility(View.VISIBLE);
+            logOutTv.setVisibility(View.VISIBLE);
 
-            if(!user.isEmailVerified()){
-                verifyTv.setVisibility(View.GONE);
-                findViewById(R.id.verifyBt).setVisibility(View.GONE);
-                logOutTv.setVisibility(View.VISIBLE);
-                findViewById(R.id.logInBt).setVisibility(View.VISIBLE);
-            } else {
-                verifyTv.setText(verifyEmail);
-                verifyTv.setVisibility(View.VISIBLE);
-                findViewById(R.id.verifyBt).setVisibility(View.VISIBLE);
-            }
+            findViewById(R.id.logInBt).setVisibility(View.VISIBLE);
 
         } else {
 
@@ -227,12 +235,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.hasAcctBt:
                 signIn(email, password);
                 break;
-            case R.id.verifyBt:
-                verifyEmail();
+            case R.id.logInBt:
+                goToListScreen();
                 break;
             default:
                 break;
         }
+    }
+
+    private void goToListScreen(){
+        Intent hwListIntent = new Intent(this, ExpenseListActivity.class);
+        startActivity(hwListIntent);
     }
 
 }

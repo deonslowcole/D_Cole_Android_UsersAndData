@@ -19,7 +19,7 @@
         <ImageView
             android:layout_width="175dp"
             android:layout_height="175dp"
-            android:src="@drawable/backpackicon"
+            android:src="@drawable/expense_icon"
             android:contentDescription="@string/app_name"/>
     </LinearLayout>
 
@@ -84,6 +84,8 @@
             android:layout_height="wrap_content"
             android:paddingTop="20dp"
             android:visibility="gone"
+            android:textColor="@color/black"
+            android:textStyle="bold"
             tools:text="Hello, person. Click to log in."/>
 
         <TextView
@@ -92,7 +94,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
             android:visibility="gone"
-            tools:text="CLick to verify your email"/>
+            tools:text="Click to verify your email"/>
 
         <Button
             android:id="@+id/verifyBt"
@@ -106,7 +108,7 @@
             android:id="@+id/logInBt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="35dp"
             android:textColor="@color/blueBackground"
             android:background="@color/yellowBackground"
             android:text="@string/log_in"
