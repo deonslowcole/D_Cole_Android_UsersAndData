@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/exUpdateNameEt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:hint="@string/enter_location"/>
+
+    <EditText
+        android:id="@+id/exUpdateAmtEt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:maxLength="10"
+        android:hint="@string/enter_amount"
+        android:inputType="numberDecimal"/>
+
+    <EditText
+        android:id="@+id/exUpdateDateEt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="@string/enter_date"
+        android:inputType="date"/>
+
+</LinearLayout>

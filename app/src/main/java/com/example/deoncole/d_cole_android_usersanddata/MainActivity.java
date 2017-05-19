@@ -5,12 +5,21 @@
 
 package com.example.deoncole.d_cole_android_usersanddata;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,10 +35,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //Declare objects for the views
     EditText emailEt, passwordEt;
     TextView logInTv, logOutTv, verifyTv;
+    Button logInBt;
+
+    //Declare boolean object for when the device is connected to a network
+    boolean isConnected;
     
     //Declare objects for user authorization and listener for changes
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+
+    NetworkCheckReceiver mNetworkCheckReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,12 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         logInTv = (TextView)findViewById(R.id.logInTv);
         logOutTv = (TextView)findViewById(R.id.logOutTv);
         verifyTv = (TextView)findViewById(R.id.verifiedTv);
-
-        //Set on click listeners for the buttons
-        findViewById(R.id.signUpBt).setOnClickListener(this);
-        findViewById(R.id.hasAcctBt).setOnClickListener(this);
-        findViewById(R.id.logInBt).setOnClickListener(this);
-        findViewById(R.id.verifyBt).setOnClickListener(this);
+        logInBt = (Button)findViewById(R.id.logInBt);
 
         //Initialize the authorization
         mAuth = FirebaseAuth.getInstance();
@@ -65,13 +75,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         };
 
+        ConnectivityManager cManager = (ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cManager.getActiveNetworkInfo();
+
+        isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+        if(!isConnected){
+            Toast.makeText(this, "Network is unavailable", Toast.LENGTH_SHORT).show();
+        }
+
+        //Set on click listeners for the buttons
+        findViewById(R.id.signUpBt).setOnClickListener(this);
+        findViewById(R.id.hasAcctBt).setOnClickListener(this);
+        findViewById(R.id.logInBt).setOnClickListener(this);
+        findViewById(R.id.verifyBt).setOnClickListener(this);
+
+
         //Click listener for when the user wants to log out
         logOutTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 signOut();
+
+                if(!isConnected){
+                    Toast.makeText(MainActivity.this, "Network is unavailable", Toast.LENGTH_SHORT)
+                            .show();
+                }
             }
         });
+
+        Intent intent = new Intent(this, DatabaseAlarmManager.class);
+        long alarmTime = 20000;
+        PendingIntent pIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
+                alarmTime, pIntent);
+
+        Intent netIntent = new Intent(this, NetworkCheckReceiver.class);
+        long netCheckTime = 2000;
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, netIntent, 0);
+        AlarmManager netAlarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+        netAlarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
+                netCheckTime, pendingIntent);
+
     }
 
 
@@ -162,6 +208,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             isEmpty = false;
         }
 
+        if (!isValidEmail(email)){
+            emailEt.setError("Please enter a valid Email address");
+            isEmpty = false;
+            System.out.println("EMAIL MATCH");
+        }
+
         if(passwordEt.getText().length() < 6){
             passwordEt.setError("Please enter a password more than 6 characters");
             isEmpty = false;
@@ -188,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             logInTv.setVisibility(View.VISIBLE);
             logOutTv.setVisibility(View.VISIBLE);
 
-            findViewById(R.id.logInBt).setVisibility(View.VISIBLE);
+            logInBt.setVisibility(View.VISIBLE);
 
         } else {
 
@@ -220,16 +272,55 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 signIn(email, password);
                 break;
             case R.id.logInBt:
-                goToListScreen();
+                goToExpenseScreen();
                 break;
             default:
                 break;
         }
     }
 
-    private void goToListScreen(){
+    private void goToExpenseScreen(){
         Intent exActivityIntent = new Intent(this, ExpenseActivity.class);
         startActivity(exActivityIntent);
+    }
+
+    public final boolean isValidEmail(CharSequence email){
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mNetworkCheckReceiver = new NetworkCheckReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(CONNECTIVITY_SERVICE);
+
+        registerReceiver(mNetworkCheckReceiver, filter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        unregisterReceiver(mNetworkCheckReceiver);
+    }
+
+    private class NetworkCheckReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager cManager = (ConnectivityManager)context.getSystemService
+                    (Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = cManager.getActiveNetworkInfo();
+
+            boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+            if(!isConnected){
+                Toast.makeText(context, "Network is unavailable", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
 }

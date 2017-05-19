@@ -5,8 +5,14 @@
     <item
         android:id="@+id/action_add"
         android:icon="@android:drawable/ic_menu_add"
-        android:orderInCategory="100"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:title="Add">
+    </item>
+
+    <item
+        android:id="@+id/action_update"
+        android:icon="@drawable/ic_action_update"
+        app:showAsAction="ifRoom"
+        android:title="Update">
     </item>
 </menu>

@@ -13,6 +13,7 @@
     <string name="enter_type">Type of Expense</string>
     <string name="enter_location">Business Name</string>
     <string name="enter_amount">Amount</string>
-    <string name="enter_date">Date (MM/DD/YYYY)</string>
+    <string name="enter_date">Date (MM/DD/YY)</string>
     <string name="your_last_expense">Your last expense:</string>
+    <string name="delete">Delete</string>
 </resources>

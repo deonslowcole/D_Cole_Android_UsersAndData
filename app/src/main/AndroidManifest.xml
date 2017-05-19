@@ -3,6 +3,7 @@
     package="com.example.deoncole.d_cole_android_usersanddata">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -20,8 +21,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ExpenseActivity" />
-        <activity android:name=".FormActivity"></activity>
+        <activity android:name=".ExpenseActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".FormActivity" android:screenOrientation="portrait"></activity>
+        <receiver android:name=".DatabaseAlarmManager"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.deoncole.d_cole_android_usersanddata.ACTION_POLL"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
