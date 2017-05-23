@@ -99,8 +99,8 @@ public class FormActivity extends AppCompatActivity {
             } else if (!checkDate(exDate)){
                 exDateEt.setError("Please enter a date in MM/DD/YY format");
             } else {
-                DecimalFormat dformat = new DecimalFormat("######.##");
-                String amtFormat = dformat.format(Double.valueOf(amount));
+                DecimalFormat dFormat = new DecimalFormat("######.##");
+                String amtFormat = dFormat.format(Double.valueOf(amount));
                 exAmount = Double.parseDouble(amtFormat);
 //                exAmount = Double.parseDouble(amount);
                 dbRef.setValue(new ExpenseObjects(exLocation, exAmount, exDate));
